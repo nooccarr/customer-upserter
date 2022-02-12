@@ -6,7 +6,7 @@
   "author": "Soohyun Lim",
   "license": "ISC",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "nodemon server/index.js --watch"
   },
   "dependencies": {
     "axios": "^0.25.0",
