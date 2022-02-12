@@ -1,19 +1,16 @@
 {
   "name": "customer-upserter",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "API for adding or updating user data into Customer.io",
+  "main": "server/index.js",
+  "author": "Soohyun Lim",
+  "license": "ISC",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/nooccarr/customer-upserter.git"
-  },
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/nooccarr/customer-upserter/issues"
-  },
-  "homepage": "https://github.com/nooccarr/customer-upserter#readme"
+  "dependencies": {
+    "axios": "^0.25.0",
+    "express": "^4.17.2",
+    "nodemon": "^2.0.15"
+  }
 }
