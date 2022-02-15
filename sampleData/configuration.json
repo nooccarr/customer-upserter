@@ -3,11 +3,11 @@
   "userId": "id",
   "mappings": [
     {
-      "from": "computed_ltv",
-      "to": "ltv"
+      "from": "first_name",
+      "to": "middle_name"
     }, {
-      "from": "name",
-      "to": "name"
+      "from": "yes",
+      "to": "no"
     }
   ]
 }

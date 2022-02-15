@@ -26,19 +26,28 @@ app.put('/', (req, res) => {
   // TODO:
   // ( ) integrate parallelism
   // (v) integrate userId
-  // ( ) integrate mappings
+  // (v) integrate mappings
 
   // async parallelCall() {
-    // let promises = [];
-    // let promise = [];
-    // for (let i = 0; i < data.length; i++) {
-    //   promise.push(data[i]);
-    //   if (promise.length === config.parallelism) {
-    //     promises.push(promise);
-    //     promise = [];
-    //   }
-    // }
-    // promises.push(promise);
+    let promises = [];
+    let promise = [];
+    for (let i = 0; i < data.length; i++) {
+      let customer = data[i];
+      for (let j = 0; j < config.mappings.length; j++) {
+        let mapping = config.mappings[j];
+        if (customer.hasOwnProperty(mapping.from)) {
+          customer[mapping.to] = customer[mapping.from];
+          delete customer[mapping.from];
+        }
+      }
+
+      promise.push(customer);
+      if (promise.length === config.parallelism) {
+        promises.push(promise);
+        promise = [];
+      }
+    }
+    if (promise.length) promises.push(promise);
     // console.log(promises);
   // }
 
