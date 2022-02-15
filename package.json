@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "axios": "^0.25.0",
+    "customerio-node": "^3.2.0",
     "express": "^4.17.2",
+    "multer": "^1.4.4",
     "nodemon": "^2.0.15"
   }
 }

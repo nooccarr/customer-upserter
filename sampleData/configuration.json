@@ -1,0 +1,13 @@
+{
+  "parallelism": 25,
+  "userId": "id",
+  "mappings": [
+    {
+      "from": "computed_ltv",
+      "to": "ltv"
+    }, {
+      "from": "name",
+      "to": "name"
+    }
+  ]
+}
