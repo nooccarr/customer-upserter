@@ -4,7 +4,7 @@ const multer = require('multer');
 const app = express();
 const upload = multer();
 
-const { siteId, apiKey } = require('./config.js');
+// const { siteId, apiKey } = require('./config.js');
 const { TrackClient, RegionUS } = require("customerio-node");
 
 app.use(express.json());
@@ -17,8 +17,8 @@ app.get('/', (req, res) => {
 app.put('/', async (req, res) => {
   let config = req.files[0].buffer;
   config = JSON.parse(config.toString());
-  config.siteId = siteId;
-  config.apiKey = apiKey;
+  // config.siteId = siteId;
+  // config.apiKey = apiKey;
 
   let data = req.files[1].buffer;
   data = JSON.parse(data.toString());
@@ -44,20 +44,29 @@ app.put('/', async (req, res) => {
   try {
     let cio = new TrackClient(config.siteId, config.apiKey, { region: RegionUS });
     for (customers of promises) {
-      await Promise.all(customers.map((customer, i) => {
-        let retry = (retries=3, err=null) => {
-          if (!retries) {
-            console.log(err);
-            return;
-          }
-          cio.identify(customer[config.userId], customer)
-            .catch(err => retry(retries - 1, err));
-        };
-        retry();
-      }));
+      await Promise.all(customers.map((customer) => {
+    //     // let retry = (retries=1, err=null) => {
+    //     //   if (!retries) {
+    //     //     // console.log(err.statusCode);
+    //     //     return err;
+    //     //   }
+          return cio.identify(customer[config.userId], customer)
+            .catch(err => {
+              console.log('LOOP:', err.statusCode);
+              console.log('LOOP:', err);
+              throw err.statusCode;
+            });
+            // .catch(err => console.log(err))
+    //         // .catch(err => retry(retries - 1, err));
+    //     // };
+    //     // retry();
+      }))
+        // .catch(err => console.log('PROMISE CATCH'));
+      // console.log('END OF TRY');
     }
   } catch (err) {
-    console.log(err);
+    console.log('CATCH:', err);
+    return res.sendStatus(401);
   }
 
   return res.sendStatus(200);
@@ -71,14 +80,9 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}`));
 
 // TEST CASES:
-// curl --request PUT \
-// --url https://track.customer.io/api/v1/customers/person@example.com \
-// --header "Authorization: Basic $(echo -n site_id:api_key | base64)" \
-// --header 'content-type: application/json' \
-// --data '{"id":"id1234"}'
+// curl -X PUT -F inputs=@sampleData/configuration.json -F inputs=@sampleData/sampleData.json http://localhost:3000
 
 // curl --request PUT \
-// --url https://track.customer.io/api/v1/customers/id1234 \
-// --header "Authorization: Basic $(echo -n site_id:api_key | base64)" \
-// --header 'content-type: application/json' \
-// --data '{"email":"person@example.com"}'
+// --url http://localhost:3000 \
+// --form 'inputs=@sampleData/configuration.json' \
+// --form 'inputs=@sampleData/data.json'
