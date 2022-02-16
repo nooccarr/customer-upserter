@@ -23,11 +23,6 @@ app.put('/', async (req, res) => {
   let data = req.files[1].buffer;
   data = JSON.parse(data.toString());
 
-  // TODO:
-  // (v) integrate parallelism
-  // (v) integrate userId
-  // (v) integrate mappings
-
   let promises = [];
   let customers = [];
 
@@ -50,16 +45,19 @@ app.put('/', async (req, res) => {
     let cio = new TrackClient(config.siteId, config.apiKey, { region: RegionUS });
     for (customers of promises) {
       await Promise.all(customers.map((customer, i) => {
-        let retry = () => {
+        let retry = (retries=3, err=null) => {
+          if (!retries) {
+            console.log(err);
+            return;
+          }
           cio.identify(customer[config.userId], customer)
-            .catch(err => retry());
+            .catch(err => retry(retries - 1, err));
         };
         retry();
       }));
     }
   } catch (err) {
     console.log(err);
-    // console.log(Object.keys(err));
   }
 
   return res.sendStatus(200);
@@ -84,17 +82,3 @@ app.listen(port, () => console.log(`Listening on port ${port}`));
 // --header "Authorization: Basic $(echo -n site_id:api_key | base64)" \
 // --header 'content-type: application/json' \
 // --data '{"email":"person@example.com"}'
-
-// {
-//   "parallelism": 25,
-//   "userId": "id",
-//   "mappings": [
-//     {
-//       "from": "computed_ltv",
-//       "to": "ltv"
-//     }, {
-//       "from": "name",
-//       "to": "name"
-//     }
-//   ]
-// }
