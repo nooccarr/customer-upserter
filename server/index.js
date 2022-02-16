@@ -4,7 +4,6 @@ const multer = require('multer');
 const app = express();
 const upload = multer();
 
-// const { siteId, apiKey } = require('./config.js');
 const { TrackClient, RegionUS } = require("customerio-node");
 
 app.use(express.json());
@@ -16,11 +15,9 @@ app.get('/', (req, res) => {
 
 app.put('/', async (req, res) => {
   let config = req.files[0].buffer;
-  config = JSON.parse(config.toString());
-  // config.siteId = siteId;
-  // config.apiKey = apiKey;
-
   let data = req.files[1].buffer;
+
+  config = JSON.parse(config.toString());
   data = JSON.parse(data.toString());
 
   let promises = [];
@@ -73,11 +70,3 @@ app.get('*', (req, res) => {
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}`));
-
-// TEST CASES:
-// curl -X PUT -F inputs=@sampleData/configuration.json -F inputs=@sampleData/sampleData.json http://localhost:3000
-
-// curl --request PUT \
-// --url http://localhost:3000 \
-// --form 'inputs=@sampleData/configuration.json' \
-// --form 'inputs=@sampleData/data.json'
