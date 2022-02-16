@@ -45,27 +45,22 @@ app.put('/', async (req, res) => {
     let cio = new TrackClient(config.siteId, config.apiKey, { region: RegionUS });
     for (customers of promises) {
       await Promise.all(customers.map((customer) => {
-    //     // let retry = (retries=1, err=null) => {
-    //     //   if (!retries) {
-    //     //     // console.log(err.statusCode);
-    //     //     return err;
-    //     //   }
           return cio.identify(customer[config.userId], customer)
             .catch(err => {
-              console.log('LOOP:', err.statusCode);
-              console.log('LOOP:', err);
-              throw err.statusCode;
+              if (err.statusCode === 401) {
+                throw err;
+              } else if (err.errno === 'ENOTFOUND') {
+                let retry = (retries=3, err=null) => {
+                  if (!retries) throw err;
+                  return cio.identify(customer[config.userId], customer)
+                    .catch(err => retry(retries - 1, err));
+                };
+                retry();
+              }
             });
-            // .catch(err => console.log(err))
-    //         // .catch(err => retry(retries - 1, err));
-    //     // };
-    //     // retry();
-      }))
-        // .catch(err => console.log('PROMISE CATCH'));
-      // console.log('END OF TRY');
+      }));
     }
   } catch (err) {
-    console.log('CATCH:', err);
     return res.sendStatus(401);
   }
 
