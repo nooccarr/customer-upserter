@@ -49,9 +49,12 @@ app.put('/', async (req, res) => {
   try {
     let cio = new TrackClient(config.siteId, config.apiKey, { region: RegionUS });
     for (customers of promises) {
-      await Promise.all(customers.map(customer => {
-        cio.identify(customer[config.userId], customer)
-          .catch(err => console.log(err));
+      await Promise.all(customers.map((customer, i) => {
+        let retry = () => {
+          cio.identify(customer[config.userId], customer)
+            .catch(err => retry());
+        };
+        retry();
       }));
     }
   } catch (err) {
