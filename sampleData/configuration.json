@@ -1,5 +1,5 @@
 {
-  "parallelism": 2,
+  "parallelism": 15,
   "userId": "id",
   "mappings": [
     {

@@ -14,7 +14,7 @@ app.get('/', (req, res) => {
   res.send('Hello world!');
 });
 
-app.put('/', (req, res) => {
+app.put('/', async (req, res) => {
   let config = req.files[0].buffer;
   config = JSON.parse(config.toString());
   config.siteId = siteId;
@@ -24,40 +24,42 @@ app.put('/', (req, res) => {
   data = JSON.parse(data.toString());
 
   // TODO:
-  // ( ) integrate parallelism
+  // (v) integrate parallelism
   // (v) integrate userId
   // (v) integrate mappings
 
-  // async parallelCall() {
-    let promises = [];
-    let promise = [];
-    for (let i = 0; i < data.length; i++) {
-      let customer = data[i];
-      for (let j = 0; j < config.mappings.length; j++) {
-        let mapping = config.mappings[j];
-        if (customer.hasOwnProperty(mapping.from)) {
-          customer[mapping.to] = customer[mapping.from];
-          delete customer[mapping.from];
-        }
-      }
+  let promises = [];
+  let customers = [];
 
-      promise.push(customer);
-      if (promise.length === config.parallelism) {
-        promises.push(promise);
-        promise = [];
+  for (let customer of data) {
+    for (let mapping of config.mappings) {
+      if (customer.hasOwnProperty(mapping.from)) {
+        customer[mapping.to] = customer[mapping.from];
+        delete customer[mapping.from];
       }
     }
-    if (promise.length) promises.push(promise);
-    // console.log(promises);
-  // }
+    customers.push(customer);
+    if (customers.length === config.parallelism) {
+      promises.push(customers);
+      customers = [];
+    }
+  }
+  if (customers.length) promises.push(customers);
 
-  Promise.all(data.map((customer) => {
+  try {
     let cio = new TrackClient(config.siteId, config.apiKey, { region: RegionUS });
-    cio.identify(customer[config.userId], customer)
-  }))
-    .then(results => res.sendStatus(200))
-    .catch(err => res.sendStatus(401));
+    for (customers of promises) {
+      await Promise.all(customers.map(customer => {
+        cio.identify(customer[config.userId], customer)
+          .catch(err => console.log(err));
+      }));
+    }
+  } catch (err) {
+    console.log(err);
+    // console.log(Object.keys(err));
+  }
 
+  return res.sendStatus(200);
 });
 
 app.get('*', (req, res) => {
