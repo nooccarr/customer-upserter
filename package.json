@@ -9,6 +9,7 @@
     "start": "nodemon server/index.js --watch"
   },
   "dependencies": {
+    "axios": "^0.26.0",
     "customerio-node": "^3.2.0",
     "express": "^4.17.2",
     "multer": "^1.4.4",
