@@ -1,6 +1,6 @@
 # Customer Upserter
 
-The goal of this project is to build a mini, standalone script with a small subset of functionality offered by the Hightouch Customer.io integration. The goal of the script is to sync user data from local files to the Customer.io API. 
+The goal of this project is to build a mini, standalone script that offers a subset of the functionality provided by the Hightouch Customer.io integration. The script aims to sync user data from local files to the Customer.io API.
 
 ## Inputs
 
@@ -11,7 +11,7 @@ The goal of this project is to build a mini, standalone script with a small subs
 
 ### Configuration file
 
-The configuration file will define how the user data will be synced into Customer.io.
+The configuration file defines the synchronization process of user data into Customer.io.
 
 * parallelism - controls the number of API requests to make in parallel
 * userId - chooses the key from the data file to use as the Customer.io user ID
@@ -38,7 +38,7 @@ The configuration file will define how the user data will be synced into Custome
 
 ### Data file
 
-The data file contains a JSON array of user data. Each object in the array represents an individual user. The data making up a user can be completely different from one data file to another.
+The data file contains a JSON array of user data, with each object representing an individual user. The structure and content of user data can vary across different data files.
 
 ```json
 [
@@ -82,8 +82,8 @@ npm start
 
 ## Running Instruction
 
-1. To gain access to the Customer.io Tracking API, add your credentials to siteId and apiKey property of configuration file.
-2. Open the terminal and use the following script to sync user data from local files to the Customer.io API.
+1. To gain access to the Customer.io Tracking API, add your credentials to the 'siteId' and 'apiKey' properties in the configuration file.
+2. Open the terminal and run the following script to sync user data from local files to the Customer.io API.
 
 ```
 curl --request PUT \
